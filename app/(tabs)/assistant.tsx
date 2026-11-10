@@ -168,7 +168,7 @@ export default function AssistantScreen() {
 
 
             {/* Outer Row Container to put the field and voice button side-by-side */}
-            <View className="mb-5 flex-row items-end gap-2 w-full px-2">
+            <View className="mb-10 flex-row items-end gap-2 w-full px-2">
             
             {/* 1. THE TEXT INPUT FIELD CONTAINER */}
             <View 
