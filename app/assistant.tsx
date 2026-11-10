@@ -48,6 +48,7 @@ function generateStubResponse(input: string) {
 
 export default function AssistantScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isTextActive, setIsTextActive] = useState(true);
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
 
@@ -163,42 +164,86 @@ export default function AssistantScreen() {
             )}
           </ScrollView>
 
-          {/* Input */}
-          <View className="mb-4 flex-row items-center gap-2 rounded-2xl border border-border bg-card p-2">
-            <TextInput
-              value={input}
-              onChangeText={setInput}
-              placeholder="Describe your ideal home..."
-              placeholderTextColor="#9CA3AF"
-              multiline
-              className="max-h-28 flex-1 px-3 py-2 text-foreground"
-              onSubmitEditing={() => sendMessage()}
-              blurOnSubmit={false}
-              returnKeyType="send"
-            />
+            {/* State needed at the top of your component: */}
 
-            {/* Voice button */}
-            <Pressable
-              onPress={() => setIsListening((current) => !current)}
-              accessibilityLabel="Start voice input"
-              className={`h-10 w-10 items-center justify-center rounded-full ${
-                isListening ? "bg-red-500" : "bg-muted"
-              }`}
-            >
-              <Text>{isListening ? "■" : "🎙"}</Text>
-            </Pressable>
 
-            {/* Send button */}
-            <Pressable
-              onPress={() => sendMessage()}
-              disabled={!input.trim()}
-              className={`h-10 w-10 items-center justify-center rounded-full ${
-                input.trim() ? "bg-primary" : "bg-muted"
-              }`}
+            {/* Outer Row Container to put the field and voice button side-by-side */}
+            <View className="mb-5 flex-row items-end gap-2 w-full px-2">
+            
+            {/* 1. THE TEXT INPUT FIELD CONTAINER */}
+            <View 
+                className={`h-12 flex-row items-center gap-1 rounded-2xl bg-gray-200 p-1.5 transition-all ${
+                isTextActive ? "w-3/4" : "w-1/4"
+                }`}
             >
-              <Text className="text-primary-foreground">↑</Text>
+                {isTextActive ? (
+                <>
+                    <TextInput
+                    value={input}
+                    onChangeText={setInput}
+                    placeholder="Describe your home..."
+                    placeholderTextColor="#9CA3AF"
+                    multiline
+                    className="max-h-10 flex-1 px-2 py-2 text-foreground bg-transparent"
+                    onSubmitEditing={() => sendMessage()}
+                    blurOnSubmit={false}
+                    returnKeyType="send"
+                    onFocus={() => setIsTextActive(true)}
+                    style={{ outlineStyle: 'none' } as any} 
+                    underlineColorAndroid="transparent"
+                    />
+
+                    {/* Send button (Visible when typing) */}
+                    <Pressable
+                    onPress={() => sendMessage()}
+                    disabled={!input.trim()}
+                    className={`h-10 w-10 items-center justify-center rounded-2xl ${
+                        input.trim() ? "bg-primary" : "bg-muted"
+                    }`}
+                    >
+                    <Text className="text-primary-foreground">↑</Text>
+                    </Pressable>
+                </>
+                ) : (
+                /* Keyboard Switch Button (When text area is minimized) */
+                <Pressable
+                    onPress={() => setIsTextActive(true)}
+                    className="h-12 w-full items-center justify-center"
+                >
+                    <Text className="mb-2 text-2xl text-foreground ">⌨️</Text>
+                </Pressable>
+                )}
+            </View>
+
+            {/* 2. VOICE BUTTON CONTAINER */}
+            <Pressable
+                onPress={() => {
+                setIsTextActive(false);
+                setIsListening((current) => !current);
+                }}
+                accessibilityLabel="Voice input"
+                className={` h-12 items-center justify-center rounded-2xl  p-1.5 transition-all ${
+                !isTextActive ? "w-3/4 flex-row justify-between px-4" : "w-1/4"
+                } ${isListening ? "bg-red-500" : "bg-gray-200"}`}
+            >
+                {!isTextActive ? (
+                <>
+                    {/* Expanded Voice Mode Display */}
+                    <Text className={`text-base font-medium ${isListening ? "text-white animate-pulse" : "text-foreground"}`}>
+                    {isListening ? "Listening..." : "Tap to Speak"}
+                    </Text>
+                    <Text className={`text-2xl ${isListening ? "text-white" : "text-foreground"}`}>
+                    {isListening ? "■" : "🎙"}
+                    </Text>
+                </>
+                ) : (
+                /* Minimized Voice Icon Button */
+                <Text className="mb-0.5 text-2xl text-foreground">🎙</Text>
+                )}
             </Pressable>
-          </View>
+        </View>
+
+
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
