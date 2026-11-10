@@ -6,7 +6,7 @@ import {
   TextStyle,
 } from "react-native";
 
-import {  Link} from "expo-router";
+import {  Link, Href} from "expo-router";
 
 
 const INACTIVITY_TIMEOUT = 5000; // 5 seconds
